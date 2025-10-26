@@ -68,17 +68,20 @@ public class Profile {
         return new HashMap<>(friends); // Return a copy of the friends map to prevent modification
     }
 
-    public void addFriend(UUID friendID, int friendshipLevel) throws IllegalArgumentException {
+    public void addFriend(UUID friendID, Integer friendshipLevel) throws IllegalArgumentException {
         if (friends.containsKey(friendID)) {
             throw new IllegalArgumentException("Frienship relationship already exists");
         }
         friends.put(friendID, friendshipLevel);
     }
 
-    public void removeFriend(UUID friendID) throws IllegalArgumentException {
+    public Integer removeFriend(UUID friendID) throws IllegalArgumentException {
         if (!friends.containsKey(friendID)) {
             throw new IllegalArgumentException("Friendship relationship does not exist");
         }
+
+        Integer friendshipLevel = friends.get(friendID);
         friends.remove(friendID);
+        return friendshipLevel;
     }
 }

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info" strict="true" name="Log4j2Config">
+    <Properties>
+        <Property name="log_pattern">%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36} - %msg%n</Property>
+        <Property name="app_log_root">logs</Property>
+        <Property name="base_name">social-network_${hostName}</Property>
+    </Properties>
+    <Appenders>
+        <Console name="Console">
+            <PatternLayout pattern="${log_pattern}"/>
+        </Console>
+        <RollingFile    name="FileLogger"
+                        fileName="${app_log_root}/${base_name}.log"
+                        filePattern="${app_log_root}/${base_name}_%d{yyyy-MM-dd}_%03i.log"
+                        append="true">
+            <PatternLayout pattern="${log_pattern}"/>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="100MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="5"/>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="debug">
+            <AppenderRef ref="FileLogger"/>
+        </Root>
+
+        <Logger name="main" level="debug" additivity="false">
+            <AppenderRef ref="FileLogger"/>
+        </Logger>
+
+    </Loggers>
+</Configuration>

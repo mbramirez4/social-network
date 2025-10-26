@@ -4,9 +4,14 @@ import java.util.UUID;
 import java.util.Map;
 import java.util.HashMap;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import socialnetwork.Model.Profile;
 
 public class ProfilesManager {
+    private static final Logger logger = LogManager.getLogger(ProfilesManager.class);
+
     private Map<UUID, Profile> profiles;
 
     public ProfilesManager() {
@@ -31,17 +36,97 @@ public class ProfilesManager {
         Map<UUID, Integer> friends = getProfile(profileID).getFriends();
         for (UUID friendID : friends.keySet()) {
             try {
-                profiles.get(friendID).removeFriend(profileID);
+                getProfile(friendID).removeFriend(profileID);
             } catch (IllegalArgumentException e) {
-                System.err.println("Error removing friend: " + e.getMessage());
+                logger.warn("Error removing friend " + profileID + " from profile " + friendID + ": " + e.getMessage(), e);
+                continue;
             }
         }
-        
+
         profiles.remove(profileID);
+    }
+
+    /*
+    Returns true if profiles were connected, false otherwise
+    */
+    public boolean connectProfiles(UUID profileID1, UUID profileID2, int friendshipLevel) {
+        Profile profile1, profile2;
+        try {
+            profile1 = getProfile(profileID1);
+            profile2 = getProfile(profileID2);
+        }
+        catch (IllegalArgumentException e) {
+            logger.warn("Error connecting profiles " + profileID1 + " and " + profileID2 + ": " + e.getMessage(), e);
+            return false;
+        }
+
+        try{
+            profile1.addFriend(profileID2, friendshipLevel);
+            profile2.addFriend(profileID1, friendshipLevel);
+        }
+        catch (IllegalArgumentException e) {
+            logger.warn("Error connecting profiles " + profileID1 + " and " + profileID2 + ": " + e.getMessage(), e);
+            cleanupConnectionAttempt(profile1, profile2);
+            return false;
+        }
+
+        return true;
+    }
+
+    /*
+    Returns true if profiles were disconnected, false otherwise
+    */
+    public boolean disconnectProfiles(UUID profileID1, UUID profileID2) {
+        Profile profile1, profile2;
+        try {
+            profile1 = getProfile(profileID1);
+            profile2 = getProfile(profileID2);
+        }
+        catch (IllegalArgumentException e) {
+            logger.warn("Error disconnecting profiles " + profileID1 + " and " + profileID2 + ": " + e.getMessage(), e);
+            return false;
+        }
+
+        Integer friendshipLevel = 0;
+        try{
+            friendshipLevel = profile1.removeFriend(profileID2);
+            friendshipLevel = profile2.removeFriend(profileID1);
+        }
+        catch (IllegalArgumentException e) {
+            logger.warn("Error disconnecting profiles " + profileID1 + " and " + profileID2 + ": " + e.getMessage(), e);
+            cleanupDisconnectionAttempt(profile1, profile2, friendshipLevel);
+            return false;
+        }
+
+        return true;
     }
 
     public void loadProfiles(String filename) {
         throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    private void cleanupConnectionAttempt(Profile profile1, Profile profile2) {
+        try {
+            profile1.removeFriend(profile2.getProfileID());
+        }
+        catch (IllegalArgumentException e) {}
+
+        try {
+            profile2.removeFriend(profile1.getProfileID());
+        }
+        catch (IllegalArgumentException e) {}
+    }
+
+    private void cleanupDisconnectionAttempt(Profile profile1, Profile profile2, Integer friendshipLevel) {
+        try {
+            profile1.addFriend(profile2.getProfileID(), friendshipLevel);
+        }
+        catch (IllegalArgumentException e) {}
+
+        try {
+            profile2.addFriend(profile1.getProfileID(), friendshipLevel);
+        }
+        catch (IllegalArgumentException e) {}
     }
 
 }
