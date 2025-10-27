@@ -101,6 +101,11 @@ public class ProfilesManager {
         return true;
     }
 
+    public UUID[] getProfilesIDs() {
+        return profiles.keySet().toArray(new UUID[0]);
+        
+    }
+
     public void loadProfiles(String filename) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
