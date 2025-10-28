@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import socialnetwork.Model.Profile;
+import socialnetwork.Util.ProfilesLoader;
 
 public class ProfilesManager {
     private static final Logger logger = LogManager.getLogger(ProfilesManager.class);
@@ -107,7 +108,13 @@ public class ProfilesManager {
     }
 
     public void loadProfiles(String filename) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        try {
+            ProfilesLoader loader = new ProfilesLoader();
+            profiles = loader.loadProfilesFromCSV(filename);
+        } catch (Exception e) {
+            logger.error("Error loading profiles from file " + filename + ": " + e.getMessage(), e);
+            throw new RuntimeException("Failed to load profiles from file", e);
+        }
     }
 
     private void cleanupConnectionAttempt(Profile profile1, Profile profile2) {
