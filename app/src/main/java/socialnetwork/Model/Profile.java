@@ -64,6 +64,10 @@ public class Profile {
         return age;
     }
 
+    public Gender getGender() {
+        return gender;
+    }
+
     public Map<UUID, Integer> getFriends() {
         return new HashMap<>(friends); // Return a copy of the friends map to prevent modification
     }
