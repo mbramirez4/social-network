@@ -1,6 +1,7 @@
 package socialnetwork.Service;
 
 import java.util.UUID;
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -8,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import socialnetwork.Model.Profile;
+import socialnetwork.Model.Gender;
 import socialnetwork.Util.ProfilesLoader;
 
 public class ProfilesManager {
@@ -115,6 +117,40 @@ public class ProfilesManager {
             logger.error("Error loading profiles from file " + filename + ": " + e.getMessage(), e);
             throw new RuntimeException("Failed to load profiles from file", e);
         }
+    }
+
+    public List<Profile> suggestConnections(UUID profileID) {
+        return suggestConnections(profileID, 100);
+    }
+
+    public List<Profile> suggestConnections(UUID profileID, Integer maxSuggestions) {
+        return suggestConnections(profileID, maxSuggestions, null, null, null);
+    }
+
+    public List<Profile> suggestConnections(
+        UUID profileID,
+        Integer maxSuggestions,
+        String genderFilter,
+        Integer minAgeFilter,
+        Integer maxAgeFilter
+    ) {
+        Gender gender = null;
+        if (genderFilter != null) {
+            gender = Gender.fromString(genderFilter);
+        }
+
+        if (maxSuggestions == null) {
+            maxSuggestions = 100;
+        }
+
+        if (minAgeFilter == null) {
+            minAgeFilter = 0;
+        }
+
+        if (maxAgeFilter == null) {
+            maxAgeFilter = 1000;
+        }
+        return SuggestionsEngine.getSuggestions(profileID, maxSuggestions, gender, minAgeFilter, maxAgeFilter, Map.copyOf(profiles));
     }
 
     private void cleanupConnectionAttempt(Profile profile1, Profile profile2) {
