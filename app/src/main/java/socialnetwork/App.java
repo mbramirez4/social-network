@@ -3,12 +3,41 @@
  */
 package socialnetwork;
 
-public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
+import java.util.UUID;
 
+import socialnetwork.Model.Profile;
+import socialnetwork.Service.ProfilesManager;
+import socialnetwork.Service.ConnectionsVisualizer;
+
+public class App {
+    
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        ProfilesManager manager = new ProfilesManager();
+        
+        manager.loadProfiles("app/src/main/resources/profiles_80.csv");
+        
+        UUID profileID = UUID.fromString("1220dffb-7dba-4bf7-a984-59ffef16b797");
+        Profile profile = manager.getProfile(profileID);
+        
+        System.out.println("======== Suggested connections for " + profile.getName() + " ========");
+        for (Profile p : manager.suggestConnections(profileID, 10, "MALE", null, null)) {
+            System.out.println(p.getName() + " (" + p.getGender() + ")");
+        }
+        System.out.println("================================");
+
+        ConnectionsVisualizer.setProfilesManager(manager);
+        ConnectionsVisualizer visualizer = new ConnectionsVisualizer();
+        visualizer.drawGraph(profileID, 3);
+
+        profileID = UUID.fromString("e48be7f3-25bd-4cf1-bb8c-611efa45513c");
+        profile = manager.getProfile(profileID);
+        System.out.println(profile);
+
+        visualizer = new ConnectionsVisualizer();
+        visualizer.drawGraph(profileID, 10);
+
+        profileID = UUID.fromString("a241e301-aefa-4d0b-94bf-ed5fcdbb19f8");
+        visualizer = new ConnectionsVisualizer();
+        visualizer.drawGraph(profileID, 10);
     }
 }

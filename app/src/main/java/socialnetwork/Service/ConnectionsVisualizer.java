@@ -26,19 +26,19 @@ public class ConnectionsVisualizer {
         tree = new ProfileTree(profilesManager.getProfilesIDs());
     }
 
-    public void drawGraph(UUID profileID, int maxFriendshipLevel) {
-        computeTree(profileID, maxFriendshipLevel);
+    public void drawGraph(UUID profileID, int maxGraphDepth) {
+        computeTree(profileID, maxGraphDepth);
         tree.drawTree();
     }
 
-    private void computeTree(UUID profileID, int maxFriendshipLevel) {
+    private void computeTree(UUID profileID, int maxTreeDepth) {
         Profile tempProfile;
         Set<UUID> addedFriends = new HashSet<>();
         
         Set<UUID> currentLevelProfiles = new HashSet<>();
         currentLevelProfiles.add(profileID);
         
-        for (int i = 0; i < maxFriendshipLevel; i++) {
+        for (int i = 0; i < maxTreeDepth; i++) {
             for (UUID id : currentLevelProfiles) {
                 if (tree.getCount() <= 1) {
                     break;
@@ -174,7 +174,7 @@ public class ConnectionsVisualizer {
 
             Graph graph = new SingleGraph("Friendships cluster");
             graph.setAttribute("ui.stylesheet",
-                    "node { fill-color: lightblue; size: 25px; text-size: 15px; } "
+                    "node { fill-color: lightblue; size: 15px; text-size: 15px; } "
                             + "edge { fill-color: gray; size: 2px; text-size: 15px; }");
 
             Set<Map.Entry<UUID, Integer>> entries = profileToIndex.entrySet();
