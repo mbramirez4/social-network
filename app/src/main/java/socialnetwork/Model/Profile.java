@@ -45,7 +45,7 @@ public class Profile {
         this.name = name;
         this.age = age;
         this.gender = genderEnum;
-        this.friends = new HashMap<>();
+        this.friends = friends;
     }
 
     public Profile(String name, int age, String gender) throws IllegalArgumentException {
@@ -83,5 +83,16 @@ public class Profile {
         Integer friendshipLevel = friends.get(friendID);
         friends.remove(friendID);
         return friendshipLevel;
+    }
+
+    @Override
+    public String toString() {
+        return "Profile{" +
+            "profileID=" + profileID +
+            ", name='" + name + '\'' +
+            ", age=" + age +
+            ", gender=" + gender +
+            ", friends=" + friends +
+            '}';
     }
 }

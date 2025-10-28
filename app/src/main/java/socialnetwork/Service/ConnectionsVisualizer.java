@@ -170,17 +170,20 @@ public class ConnectionsVisualizer {
         public void drawTree(){
             Node node = null;
             Edge edge = null;
+            String label = "";
 
             Graph graph = new SingleGraph("Friendships cluster");
             graph.setAttribute("ui.stylesheet",
                     "node { fill-color: lightblue; size: 25px; text-size: 15px; } "
-                            + "edge { fill-color: gray; size: 2px; }");
+                            + "edge { fill-color: gray; size: 2px; text-size: 15px; }");
 
             Set<Map.Entry<UUID, Integer>> entries = profileToIndex.entrySet();
             for (Map.Entry<UUID, Integer> entry : entries) {
+                label = profilesManager.getProfile(entry.getKey()).getName();
+                // label += "\n" + entry.getKey().toString();
+
                 node = graph.addNode(String.valueOf(entry.getValue()));
-                node.setAttribute("ui.label", profilesManager.getProfile(entry.getKey()).getName());
-                node.setAttribute("ui.profileID", entry.getKey().toString());
+                node.setAttribute("ui.label", label);
             }
 
             graph.display();
@@ -190,7 +193,7 @@ public class ConnectionsVisualizer {
                 i = entry.getValue();
                 if (parent[i] != i){
                     edge = graph.addEdge(i + "-" + parent[i], String.valueOf(i), String.valueOf(parent[i]));
-                    edge.addAttribute("ui.strength", connectionsStrength[i]);
+                    edge.addAttribute("ui.label", connectionsStrength[i]);
                 }
             }
 
